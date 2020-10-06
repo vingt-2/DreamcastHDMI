@@ -289,4 +289,6 @@ typedef std::function<void(int read, int total, bool done, int error)> ProgressC
 #define COLOR_EXP_OFF 3
 #define COLOR_EXP_AUTO 7
 
+#define EARLY_PLL_RESET_TIMEOUT 200
+
 #endif

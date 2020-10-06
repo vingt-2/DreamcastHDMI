@@ -1129,6 +1129,18 @@ void printSerialMenu() {
     DEBUG2("------------------------------\n");
 }
 
+void earlyEspResetForVincentsWeirdDreamcast() {
+    timeoutTask.setTimeout(EARLY_PLL_RESET_TIMEOUT);
+    timeoutTask.setTimeoutCallback([](uint32_t timedone, bool done) {
+        if (done) {
+            taskManager.StopTask(&timeoutTask);
+            fpgaTask.Write(I2C_PLL_RESET, 0, NULL);
+            fpgaTask.ForceLoop();
+        }
+    });
+    taskManager.StartTask(&timeoutTask);
+}
+
 void setup(void) {
     DBG_OUTPUT_PORT.begin(115200);
     DEBUG2("\n>> ESP starting... " DCHDMI_VERSION "\n");
@@ -1150,6 +1162,8 @@ void setup(void) {
     setupTaskManager();
     setupCredentials();
     waitForController();
+    fpgaTask.Write(I2C_PLL_RESET, 0, NULL); fpgaTask.ForceLoop();
+    fpgaTask.Write(I2C_NBP_RESET, 0, NULL); fpgaTask.ForceLoop();
     fpgaTask.Write(I2C_ACTIVATE_HDMI, 1, NULL); fpgaTask.ForceLoop();
     setupWiFi();
 
